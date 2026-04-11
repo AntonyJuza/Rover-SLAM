@@ -1,7 +1,7 @@
 import os
 import xacro
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
@@ -41,6 +41,37 @@ def generate_launch_description():
         executable='joint_state_publisher',
         name='joint_state_publisher',
         parameters=[{'use_sim_time': False}],
+    )
+
+    # Static TFs — published explicitly to avoid robot_state_publisher timestamp=0 bug
+    # base_link → laser (lidar position from URDF: x=-0.08, z=0.08)
+    laser_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='laser_tf',
+        arguments=['--x', '-0.08',
+                   '--y', '0.0',
+                   '--z', '0.08',
+                   '--roll', '0',
+                   '--pitch', '0',
+                   '--yaw', '0',
+                   '--frame-id', 'base_link',
+                   '--child-frame-id', 'laser'],
+    )
+
+    # base_link → imu_link (from URDF via top_plate: approx x=0.02, y=-0.04, z=0.047)
+    imu_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='imu_tf',
+        arguments=['--x', '0.02',
+                   '--y', '-0.04',
+                   '--z', '0.047',
+                   '--roll', '0',
+                   '--pitch', '0',
+                   '--yaw', '0',
+                   '--frame-id', 'base_link',
+                   '--child-frame-id', 'imu_link'],
     )
 
     # =========================================================================
@@ -118,6 +149,8 @@ def generate_launch_description():
     return LaunchDescription([
         robot_state_publisher,
         joint_state_publisher,
+        laser_tf,
+        imu_tf,
         imu_node,
         motor_launch,
         lidar_node,
