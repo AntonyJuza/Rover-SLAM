@@ -101,6 +101,7 @@ def generate_launch_description():
         name='ekf_filter_node',
         parameters=[os.path.join(pkg, 'config', 'ekf.yaml')],
         output='screen',
+        emulate_tty=True,
     )
 
     # =========================================================================
@@ -115,6 +116,7 @@ def generate_launch_description():
         name='slam_toolbox',
         parameters=[os.path.join(pkg, 'config', 'slam_params.yaml')],
         output='screen',
+        emulate_tty=True,
     )
 
     return LaunchDescription([
