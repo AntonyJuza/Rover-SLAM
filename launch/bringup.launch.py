@@ -110,13 +110,14 @@ def generate_launch_description():
     #    Subscribes: /scan + full TF chain
     #    Publishes:  /map  +  map→odom TF
     # =========================================================================
-    slam_node = Node(
-        package='slam_toolbox',
-        executable='async_slam_toolbox_node',
-        name='slam_toolbox',
-        parameters=[os.path.join(pkg, 'config', 'slam_params.yaml')],
-        output='screen',
-        emulate_tty=True,
+    slam_node = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
+        ),
+        launch_arguments={
+            'slam_params_file': os.path.join(pkg, 'config', 'slam_params.yaml'),
+            'use_sim_time': 'false'
+        }.items()
     )
 
     return LaunchDescription([
