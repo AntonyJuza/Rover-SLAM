@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<robot name="custom_rover" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <material name="white">
+    <color rgba="1.0 1.0 1.0 1.0"/>
+  </material>
+  <material name="black">
+    <color rgba="0.1 0.1 0.1 1.0"/>
+  </material>
+  <material name="blue">
+    <color rgba="0.2 0.2 0.8 1.0"/>
+  </material>
+  <material name="grey">
+    <color rgba="0.6 0.6 0.6 1.0"/>
+  </material>
+  <material name="green">
+    <color rgba="0.1 0.6 0.1 1.0"/>
+  </material>
+
+  <link name="base_footprint"/>
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.255 0.16 0.03"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.255 0.16 0.03"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.06" rpy="0 0 0"/>
+  </joint>
+
+  <link name="top_plate">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.145 0.12 0.005"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <joint name="top_plate_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="top_plate"/>
+    <origin xyz="-0.02 0 0.0425" rpy="0 0 0"/>
+  </joint>
+
+  <xacro:macro name="standoff" params="prefix x y">
+    <link name="${prefix}_standoff">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.003" length="0.025"/>
+        </geometry>
+        <material name="grey"/>
+      </visual>
+    </link>
+    <joint name="${prefix}_standoff_joint" type="fixed">
+      <parent link="top_plate"/>
+      <child link="${prefix}_standoff"/>
+      <origin xyz="${x} ${y} -0.015" rpy="0 0 0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:standoff prefix="front_left" x="0.06" y="0.05" />
+  <xacro:standoff prefix="front_right" x="0.06" y="-0.05" />
+  <xacro:standoff prefix="rear_left" x="-0.06" y="0.05" />
+  <xacro:standoff prefix="rear_right" x="-0.06" y="-0.05" />
+
+  <link name="raspberry_pi">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.085 0.056 0.016"/>
+      </geometry>
+      <material name="green"/>
+    </visual>
+  </link>
+
+  <joint name="rpi_joint" type="fixed">
+    <parent link="top_plate"/>
+    <child link="raspberry_pi"/>
+    <origin xyz="-0.01 0 0.0105" rpy="0 0 0"/>
+  </joint>
+
+  <link name="imu_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.02 0.015 0.003"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="top_plate"/>
+    <child link="imu_link"/>
+    <origin xyz="0.04 -0.04 0.004" rpy="0 0 0"/>
+  </joint>
+
+  <!-- FIXED: renamed laser_frame → laser to match lidar driver output -->
+  <link name="laser">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.06 0.06 0.13"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+  </link>
+
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="laser"/>
+    <origin xyz="-0.08 0 0.08" rpy="0 0 0"/>
+  </joint>
+
+  <xacro:macro name="wheel" params="prefix x_reflect y_reflect">
+    <link name="${prefix}_wheel">
+      <visual>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+          <cylinder radius="0.045" length="0.03"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+          <cylinder radius="0.045" length="0.03"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_wheel"/>
+      <origin xyz="${x_reflect * 0.115} ${y_reflect * 0.115} -0.015" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:wheel prefix="front_left"  x_reflect="1"  y_reflect="1"  />
+  <xacro:wheel prefix="front_right" x_reflect="1"  y_reflect="-1" />
+  <xacro:wheel prefix="rear_left"   x_reflect="-1" y_reflect="1"  />
+  <xacro:wheel prefix="rear_right"  x_reflect="-1" y_reflect="-1" />
+
+</robot>

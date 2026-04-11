@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>rover_bringup</name>
+  <version>0.0.1</version>
+  <description>Bringup package for custom rover — ties together all hardware drivers and SLAM</description>
+  <maintainer email="Antonyjuza@gmail.com">Juza</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>robot_localization</exec_depend>
+  <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <!-- Your hardware packages -->
+  <exec_depend>rc_motor_driver</exec_depend>
+  <exec_depend>scx3530</exec_depend>
+  <exec_depend>ros2_mpu6050</exec_depend>
+  <exec_depend>sdkeli_lidar_ls2027</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
