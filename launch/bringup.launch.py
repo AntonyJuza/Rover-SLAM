@@ -43,13 +43,7 @@ def generate_launch_description():
         parameters=[{'use_sim_time': False}],
     )
 
-    # Added tf_publisher python node
-    tf_publisher = Node(
-        package='rover_bringup',
-        executable='tf_publisher',
-        name='static_tf_publisher',
-        output='screen',
-    )
+
 
     # =========================================================================
     # 2. MPU6050 IMU
@@ -126,7 +120,6 @@ def generate_launch_description():
     return LaunchDescription([
         robot_state_publisher,
         joint_state_publisher,
-        tf_publisher,
         imu_node,
         motor_launch,
         lidar_node,
