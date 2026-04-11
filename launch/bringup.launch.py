@@ -11,6 +11,7 @@ def generate_launch_description():
 
     pkg         = get_package_share_directory('rover_bringup')
     pkg_motor   = get_package_share_directory('humanoid_motor_control')
+    imu_pkg     = get_package_share_directory('ros2_mpu6050')
 
     # ── Process URDF ──────────────────────────────────────────────────────────
     xacro_file = os.path.join(pkg, 'urdf', 'robot.urdf.xacro')
@@ -30,6 +31,8 @@ def generate_launch_description():
         parameters=[{
             'robot_description': robot_description,
             'use_sim_time': False,
+            'publish_frequency': 15.0,
+            'ignore_timestamp': True, 
         }],
     )
 
@@ -38,12 +41,10 @@ def generate_launch_description():
     #    Was: ros2 launch ros2_mpu6050 ros2_mpu6050.launch.py
     #    Publishes: /imu/mpu6050
     # =========================================================================
-    imu_node = Node(
-        package='ros2_mpu6050',
-        executable='mpu6050_sensor',
-        name='mpu6050_sensor',
-        parameters=[{'frame_id': 'imu_link'}],
-        output='screen',
+    imu_node = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(imu_pkg, 'launch', 'ros2_mpu6050.launch.py')
+        ),
     )
 
     # =========================================================================
