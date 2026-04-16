@@ -14,7 +14,7 @@ def generate_launch_description():
     imu_pkg     = get_package_share_directory('ros2_mpu6050')
 
     # ── Process URDF ──────────────────────────────────────────────────────────
-    xacro_file = os.path.join(pkg, 'urdf', 'robot.urdf.xacro')
+    xacro_file = os.path.join(pkg, 'urdf', 'pixhawk.urdf.xacro')
     robot_description = xacro.process_file(xacro_file).toxml()
 
     # =========================================================================

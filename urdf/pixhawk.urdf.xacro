@@ -114,7 +114,23 @@
     <origin xyz="0.03 0 0.0335" rpy="0 0 0"/>
   </joint>
 
-  <link name="laser_frame">
+  <link name="imu_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.02 0.015 0.003"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="top_plate"/>
+    <child link="imu_link"/>
+    <origin xyz="0.04 -0.04 0.004" rpy="0 0 0"/>
+  </joint>
+
+  <link name="laser">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -126,7 +142,7 @@
 
   <joint name="lidar_joint" type="fixed">
     <parent link="base_link"/>
-    <child link="laser_frame"/>
+    <child link="laser"/>
     <origin xyz="-0.08 0 0.08" rpy="0 0 0"/>
   </joint>
 
