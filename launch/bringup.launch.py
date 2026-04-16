@@ -2,7 +2,7 @@ import os
 import xacro
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, TimerAction
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.launch_description_sources import PythonLaunchDescriptionSource, AnyLaunchDescriptionSource
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
@@ -46,6 +46,19 @@ def generate_launch_description():
 
 
 
+
+    # =========================================================================
+    # 2. MAVROS
+    #    Runs: ros2 launch mavros px4.launch fcu_url:=serial:///dev/ttyACM0:57600
+    # =========================================================================
+    mavros_node = IncludeLaunchDescription(
+        AnyLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('mavros'), 'launch', 'px4.launch')
+        ),
+        launch_arguments={
+            'fcu_url': 'serial:///dev/ttyACM0:57600'
+        }.items()
+    )
 
     # =========================================================================
     # 3. Motor control launch (includes cytron + encoder + diff_drive)
@@ -115,6 +128,7 @@ def generate_launch_description():
         robot_state_publisher,
         joint_state_publisher,
 
+        mavros_node,
         motor_launch,
         lidar_node,
         ekf_node,
