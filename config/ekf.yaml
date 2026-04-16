@@ -22,8 +22,8 @@ ekf_filter_node:
     odom0_relative: false
     odom0_queue_size: 10
 
-    # MPU6050 IMU — topic is /imu/mpu6050
-    imu0: /imu/mpu6050
+    # MAVROS IMU — topic is /mavros/imu/data
+    imu0: /mavros/imu/data
     imu0_config: [false, false, false,   # x, y, z
                   true,  true,  true,    # roll, pitch, yaw
                   false, false, false,   # vx, vy, vz

@@ -11,7 +11,7 @@ def generate_launch_description():
 
     pkg         = get_package_share_directory('rover_bringup')
     pkg_motor   = get_package_share_directory('humanoid_motor_control')
-    imu_pkg     = get_package_share_directory('ros2_mpu6050')
+
 
     # ── Process URDF ──────────────────────────────────────────────────────────
     xacro_file = os.path.join(pkg, 'urdf', 'pixhawk.urdf.xacro')
@@ -45,16 +45,7 @@ def generate_launch_description():
 
 
 
-    # =========================================================================
-    # 2. MPU6050 IMU
-    #    Was: ros2 launch ros2_mpu6050 ros2_mpu6050.launch.py
-    #    Publishes: /imu/mpu6050
-    # =========================================================================
-    imu_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(imu_pkg, 'launch', 'ros2_mpu6050.launch.py')
-        ),
-    )
+
 
     # =========================================================================
     # 3. Motor control launch (includes cytron + encoder + diff_drive)
@@ -123,7 +114,7 @@ def generate_launch_description():
     return LaunchDescription([
         robot_state_publisher,
         joint_state_publisher,
-        imu_node,
+
         motor_launch,
         lidar_node,
         ekf_node,
