@@ -89,6 +89,7 @@ def generate_launch_description():
             'port':      2112,
             'range_max': 200.0,
             'frame_id':  'laser',
+            'skip':      2,    # 10Hz (skip every other scan)
         }],
         output='screen',
     )
