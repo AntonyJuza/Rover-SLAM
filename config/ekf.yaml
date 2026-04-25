@@ -22,8 +22,11 @@ ekf_filter_node:
     odom0_relative: false
     odom0_queue_size: 10
 
-    # MAVROS IMU — topic is /mavros/imu/data
-    imu0: /mavros/imu/data
+    # BNO055 IMU — topic is /imu/bno055
+    # Provides: fused orientation (yaw rate) + linear acceleration
+    # The BNO055 in NDOF mode provides drift-corrected orientation
+    # from its onboard sensor fusion (accel+gyro+mag)
+    imu0: /imu/bno055
     imu0_config: [false, false, false,   # x, y, z
                   false, false, false,   # roll, pitch, yaw
                   false, false, false,   # vx, vy, vz

@@ -11,10 +11,12 @@ def generate_launch_description():
 
     pkg         = get_package_share_directory('rover_bringup')
     pkg_motor   = get_package_share_directory('humanoid_motor_control')
+    pkg_bno055  = get_package_share_directory('bno055_driver')
 
 
     # ── Process URDF ──────────────────────────────────────────────────────────
-    xacro_file = os.path.join(pkg, 'urdf', 'pixhawk.urdf.xacro')
+    # Using BNO055.urdf.xacro — no Pixhawk in this branch
+    xacro_file = os.path.join(pkg, 'urdf', 'BNO055.urdf.xacro')
     robot_description = xacro.process_file(xacro_file).toxml()
 
     # =========================================================================
@@ -22,7 +24,6 @@ def generate_launch_description():
     #    Reads URDF → publishes static TFs:
     #      base_footprint→base_link, base_link→laser,
     #      base_link→imu_link, base_link→wheels
-    #    Replaces the manual static_transform_publisher you were running.
     # =========================================================================
     robot_state_publisher = Node(
         package='robot_state_publisher',
@@ -43,21 +44,15 @@ def generate_launch_description():
         parameters=[{'use_sim_time': False}],
     )
 
-
-
-
-
     # =========================================================================
-    # 2. MAVROS
-    #    Runs: ros2 launch mavros px4.launch fcu_url:=serial:///dev/ttyACM0:57600
+    # 2. BNO055 IMU Driver (replaces MAVROS/Pixhawk in this branch)
+    #    Reads BNO055 over I2C → publishes /imu/bno055 (sensor_msgs/Imu)
+    #    Publishes: orientation (quaternion) + angular velocity + linear accel
     # =========================================================================
-    mavros_node = IncludeLaunchDescription(
-        AnyLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('mavros'), 'launch', 'px4.launch')
+    bno055_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(pkg_bno055, 'launch', 'bno055.launch.py')
         ),
-        launch_arguments={
-            'fcu_url': 'serial:///dev/ttyACM0:57600'
-        }.items()
     )
 
     # =========================================================================
@@ -96,9 +91,8 @@ def generate_launch_description():
 
     # =========================================================================
     # 5. EKF — robot_localization
-    #    Was: ros2 run robot_localization ekf_node --ros-args --params-file ekf.yaml
-    #    Fuses: /odom (encoders) + /imu/mpu6050
-    #    Publishes: /odometry/filtered  +  odom→base_link TF
+    #    Fuses: /odom (encoders) + /imu/bno055 (BNO055 IMU)
+    #    Publishes: /odometry/filtered  +  odom→base_footprint TF
     # =========================================================================
     ekf_node = Node(
         package='robot_localization',
@@ -111,7 +105,6 @@ def generate_launch_description():
 
     # =========================================================================
     # 6. SLAM Toolbox
-    #    Was: ros2 launch slam_toolbox online_async_launch.py params_file:=...
     #    Subscribes: /scan + full TF chain
     #    Publishes:  /map  +  map→odom TF
     # =========================================================================
@@ -129,7 +122,7 @@ def generate_launch_description():
         robot_state_publisher,
         joint_state_publisher,
 
-        mavros_node,
+        bno055_launch,
         motor_launch,
         lidar_node,
         ekf_node,

@@ -16,6 +16,9 @@
   <material name="green">
     <color rgba="0.1 0.6 0.1 1.0"/>
   </material>
+  <material name="dark_grey">
+    <color rgba="0.2 0.2 0.2 1.0"/>
+  </material>
 
   <link name="base_footprint"/>
 
@@ -54,7 +57,7 @@
   <joint name="top_plate_joint" type="fixed">
     <parent link="base_link"/>
     <child link="top_plate"/>
-    <origin xyz="-0.02 0 0.0425" rpy="0 0 0"/> 
+    <origin xyz="0 0 0.0425" rpy="0 0 0"/> 
   </joint>
 
   <xacro:macro name="standoff" params="prefix x y">
@@ -83,7 +86,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.085 0.056 0.016"/>
+        <box size="0.056 0.085 0.016"/>
       </geometry>
       <material name="green"/>
     </visual>
@@ -92,14 +95,14 @@
   <joint name="rpi_joint" type="fixed">
     <parent link="top_plate"/>
     <child link="raspberry_pi"/>
-    <origin xyz="-0.01 0 0.0105" rpy="0 0 0"/>
+    <origin xyz="-0.025 0 0.0105" rpy="0 0 0"/>
   </joint>
 
   <link name="imu_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.027 0.020 0.004"/>
+        <box size="0.020 0.027 0.004"/>
       </geometry>
       <material name="blue"/>
     </visual>
@@ -108,10 +111,26 @@
   <joint name="imu_joint" type="fixed">
     <parent link="top_plate"/>
     <child link="imu_link"/>
-    <origin xyz="0.04 -0.04 0.0045" rpy="0 0 0"/>
+    <origin xyz="0.015 0 0.0045" rpy="0 0 0"/>
   </joint>
 
-  <link name="laser">
+  <!-- <link name="pixhawk_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.082 0.050 0.016"/>
+      </geometry>
+      <material name="dark_grey"/>
+    </visual>
+  </link> -->
+
+  <!-- <joint name="pixhawk_joint" type="fixed">
+    <parent link="top_plate"/>
+    <child link="pixhawk_link"/>
+    <origin xyz="0.03 0 0.0335" rpy="0 0 0"/>
+  </joint> -->
+
+  <link name="laser_frame">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -123,7 +142,7 @@
 
   <joint name="lidar_joint" type="fixed">
     <parent link="base_link"/>
-    <child link="laser"/>
+    <child link="laser_frame"/>
     <origin xyz="-0.08 0 0.08" rpy="0 0 0"/>
   </joint>
 
