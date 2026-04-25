@@ -83,7 +83,7 @@ def generate_launch_description():
             'hostname':  '192.168.64.100',
             'port':      2112,
             'range_max': 200.0,
-            'frame_id':  'laser',
+            'frame_id':  'laser_frame',
             'skip':      2,    # 10Hz (skip every other scan)
         }],
         output='screen',

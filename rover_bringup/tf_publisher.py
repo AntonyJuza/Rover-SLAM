@@ -21,7 +21,7 @@ class StaticTFPublisher(Node):
         t1 = TransformStamped()
         t1.header.stamp = now
         t1.header.frame_id = 'base_link'
-        t1.child_frame_id = 'laser'
+        t1.child_frame_id = 'laser_frame'
         t1.transform.translation.x = -0.08
         t1.transform.translation.y =  0.0
         t1.transform.translation.z =  0.08
@@ -33,8 +33,8 @@ class StaticTFPublisher(Node):
         t2.header.stamp = now
         t2.header.frame_id = 'base_link'
         t2.child_frame_id = 'imu_link'
-        t2.transform.translation.x =  0.02
-        t2.transform.translation.y = -0.04
+        t2.transform.translation.x =  0.015
+        t2.transform.translation.y =  0.0
         t2.transform.translation.z =  0.047
         t2.transform.rotation.w = 1.0
         transforms.append(t2)
