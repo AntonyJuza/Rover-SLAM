@@ -103,20 +103,6 @@ def generate_launch_description():
         emulate_tty=True,
     )
 
-    # =========================================================================
-    # 6. SLAM Toolbox
-    #    Subscribes: /scan + full TF chain
-    #    Publishes:  /map  +  map→odom TF
-    # =========================================================================
-    slam_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
-        ),
-        launch_arguments={
-            'slam_params_file': os.path.join(pkg, 'config', 'slam_params.yaml'),
-            'use_sim_time': 'false'
-        }.items()
-    )
 
     return LaunchDescription([
         robot_state_publisher,
@@ -126,5 +112,4 @@ def generate_launch_description():
         motor_launch,
         lidar_node,
         ekf_node,
-        slam_node,
     ])
