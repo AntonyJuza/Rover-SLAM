@@ -16,7 +16,7 @@
   <!-- Your hardware packages -->
   <exec_depend>rc_motor_driver</exec_depend>
   <exec_depend>scx3530</exec_depend>
-  <exec_depend>bno055_driver</exec_depend>
+  <exec_depend>bno055_ser</exec_depend>
   <exec_depend>sdkeli_lidar_ls2027</exec_depend>
 
   <exec_depend>rclpy</exec_depend>

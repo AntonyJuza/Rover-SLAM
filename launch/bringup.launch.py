@@ -11,7 +11,7 @@ def generate_launch_description():
 
     pkg         = get_package_share_directory('rover_bringup')
     pkg_motor   = get_package_share_directory('humanoid_motor_control')
-    pkg_bno055  = get_package_share_directory('bno055_driver')
+    pkg_bno055  = get_package_share_directory('bno055_ser')
 
 
     # ── Process URDF ──────────────────────────────────────────────────────────
@@ -51,7 +51,7 @@ def generate_launch_description():
     # =========================================================================
     bno055_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_bno055, 'launch', 'bno055.launch.py')
+            os.path.join(pkg_bno055, 'launch', 'bno055_launch.py')
         ),
     )
 
