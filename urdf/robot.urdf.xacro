@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <robot name="custom_rover" xmlns:xacro="http://ros.org/wiki/xacro">
 
+  <!-- ========================================================================= -->
+  <!-- MATERIALS                                                                 -->
+  <!-- ========================================================================= -->
   <material name="white">
     <color rgba="1.0 1.0 1.0 1.0"/>
   </material>
@@ -16,8 +19,20 @@
   <material name="green">
     <color rgba="0.1 0.6 0.1 1.0"/>
   </material>
+  <material name="red">
+    <color rgba="0.8 0.1 0.1 1.0"/>
+  </material>
 
+  <!-- ========================================================================= -->
+  <!-- BASE FOOTPRINT & BASE LINK                                                -->
+  <!-- ========================================================================= -->
   <link name="base_footprint"/>
+
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.06" rpy="0 0 0"/>
+  </joint>
 
   <link name="base_link">
     <visual>
@@ -33,14 +48,16 @@
         <box size="0.255 0.16 0.03"/>
       </geometry>
     </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1.5"/>
+      <inertia ixx="0.00331" ixy="0.0" ixz="0.0" iyy="0.00824" iyz="0.0" izz="0.01133"/>
+    </inertial>
   </link>
 
-  <joint name="base_joint" type="fixed">
-    <parent link="base_footprint"/>
-    <child link="base_link"/>
-    <origin xyz="0 0 0.06" rpy="0 0 0"/>
-  </joint>
-
+  <!-- ========================================================================= -->
+  <!-- CHASSIS EXTENSIONS: TOP PLATE & RASPBERRY PI                             -->
+  <!-- ========================================================================= -->
   <link name="top_plate">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -49,6 +66,17 @@
       </geometry>
       <material name="white"/>
     </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.145 0.12 0.005"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.2"/>
+      <inertia ixx="0.00024" ixy="0.0" ixz="0.0" iyy="0.00035" iyz="0.0" izz="0.00059"/>
+    </inertial>
   </link>
 
   <joint name="top_plate_joint" type="fixed">
@@ -66,6 +94,10 @@
         </geometry>
         <material name="grey"/>
       </visual>
+      <inertial>
+        <mass value="0.01"/>
+        <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      </inertial>
     </link>
     <joint name="${prefix}_standoff_joint" type="fixed">
       <parent link="top_plate"/>
@@ -87,6 +119,10 @@
       </geometry>
       <material name="green"/>
     </visual>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.000014" ixy="0" ixz="0" iyy="0.000031" iyz="0" izz="0.000043"/>
+    </inertial>
   </link>
 
   <joint name="rpi_joint" type="fixed">
@@ -95,6 +131,9 @@
     <origin xyz="-0.01 0 0.0105" rpy="0 0 0"/>
   </joint>
 
+  <!-- ========================================================================= -->
+  <!-- SENSORS: IMU LINK (Defined for future use, IMU plugin included)          -->
+  <!-- ========================================================================= -->
   <link name="imu_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -103,6 +142,10 @@
       </geometry>
       <material name="blue"/>
     </visual>
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+    </inertial>
   </link>
 
   <joint name="imu_joint" type="fixed">
@@ -111,15 +154,28 @@
     <origin xyz="0.04 -0.04 0.004" rpy="0 0 0"/>
   </joint>
 
-  <!-- FIXED: renamed laser_frame → laser to match lidar driver output -->
+  <!-- ========================================================================= -->
+  <!-- SENSORS: LIDAR (SDKELI LS2027 - 270 deg FOV, 20m range)                   -->
+  <!-- ========================================================================= -->
   <link name="laser">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.06 0.06 0.13"/>
+        <mesh filename="package://sdkeli_lidar/meshes/sdkeli_ls1207de.stl"/>
       </geometry>
       <material name="blue"/>
     </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.06 0.06 0.13"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.2"/>
+      <inertia ixx="0.00034" ixy="0.0" ixz="0.0" iyy="0.00034" iyz="0.0" izz="0.00012"/>
+    </inertial>
   </link>
 
   <joint name="lidar_joint" type="fixed">
@@ -128,6 +184,46 @@
     <origin xyz="-0.08 0 0.08" rpy="0 0 0"/>
   </joint>
 
+  <!-- ========================================================================= -->
+  <!-- SENSORS: CAMERA LINK & OPTICAL FRAME                                      -->
+  <!-- ========================================================================= -->
+  <link name="camera_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.08 0.03"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.08 0.03"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.00003" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00003"/>
+    </inertial>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0.10 0 0.05" rpy="0 0 0"/>
+  </joint>
+
+  <link name="camera_optical"/>
+
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_optical"/>
+    <origin xyz="0 0 0" rpy="-1.57079632679 0 -1.57079632679"/>
+  </joint>
+
+  <!-- ========================================================================= -->
+  <!-- WHEELS (Radius = 0.045m, Width = 0.03m)                                   -->
+  <!-- ========================================================================= -->
   <xacro:macro name="wheel" params="prefix x_reflect y_reflect">
     <link name="${prefix}_wheel">
       <visual>
@@ -143,6 +239,11 @@
           <cylinder radius="0.045" length="0.03"/>
         </geometry>
       </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <mass value="0.1"/>
+        <inertia ixx="0.000058" ixy="0.0" ixz="0.0" iyy="0.000058" iyz="0.0" izz="0.000101"/>
+      </inertial>
     </link>
 
     <joint name="${prefix}_wheel_joint" type="continuous">
@@ -150,12 +251,135 @@
       <child link="${prefix}_wheel"/>
       <origin xyz="${x_reflect * 0.115} ${y_reflect * 0.115} -0.015" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
+      <dynamics damping="0.01" friction="0.1"/>
     </joint>
+
+    <gazebo reference="${prefix}_wheel">
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>100000.0</kp>
+      <kd>10.0</kd>
+    </gazebo>
   </xacro:macro>
 
   <xacro:wheel prefix="front_left"  x_reflect="1"  y_reflect="1"  />
   <xacro:wheel prefix="front_right" x_reflect="1"  y_reflect="-1" />
   <xacro:wheel prefix="rear_left"   x_reflect="-1" y_reflect="1"  />
   <xacro:wheel prefix="rear_right"  x_reflect="-1" y_reflect="-1" />
+
+  <!-- ========================================================================= -->
+  <!-- GAZEBO SIM PLUGINS & SENSOR SPECIFICATIONS                                -->
+  <!-- ========================================================================= -->
+  <gazebo>
+    <!-- Front Pair Diff Drive Plugin (Single Authoritative Odometry Publisher) -->
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+      <left_joint>front_left_wheel_joint</left_joint>
+      <right_joint>front_right_wheel_joint</right_joint>
+      <wheel_separation>0.23</wheel_separation>
+      <wheel_radius>0.045</wheel_radius>
+      <odom_publish_frequency>30</odom_publish_frequency>
+      <topic>/cmd_vel</topic>
+      <odom_topic>/odom</odom_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_footprint</child_frame_id>
+      <publish_odom_tf>false</publish_odom_tf>
+    </plugin>
+
+    <!-- Rear Pair Diff Drive Plugin (Motor Actuation Only) -->
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+      <left_joint>rear_left_wheel_joint</left_joint>
+      <right_joint>rear_right_wheel_joint</right_joint>
+      <wheel_separation>0.23</wheel_separation>
+      <wheel_radius>0.045</wheel_radius>
+      <odom_publish_frequency>0</odom_publish_frequency>
+      <topic>/cmd_vel</topic>
+      <publish_odom_tf>false</publish_odom_tf>
+    </plugin>
+
+    <!-- Joint State Publisher Plugin -->
+    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+      <topic>/joint_states</topic>
+    </plugin>
+
+    <!-- Sensors System Plugin -->
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+
+    <!-- IMU System Plugin -->
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu">
+    </plugin>
+  </gazebo>
+
+  <!-- Gazebo LiDAR Sensor (SDKELI LS2027: 270 deg FOV, 20m Range) -->
+  <gazebo reference="laser">
+    <sensor name="gpu_lidar" type="gpu_lidar">
+      <update_rate>15</update_rate>
+      <topic>/scan</topic>
+      <gz_frame_id>laser</gz_frame_id>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>720</samples>
+            <resolution>1</resolution>
+            <min_angle>-2.356194</min_angle> <!-- -135 degrees -->
+            <max_angle>2.356194</max_angle>  <!-- +135 degrees -->
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.10</min>
+          <max>20.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </lidar>
+    </sensor>
+  </gazebo>
+
+  <!-- Gazebo RGB Camera Sensor -->
+  <gazebo reference="camera_link">
+    <sensor name="rgb_camera" type="camera">
+      <update_rate>30</update_rate>
+      <topic>/image_raw</topic>
+      <gz_frame_id>camera_optical</gz_frame_id>
+      <camera>
+        <horizontal_fov>1.089</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.05</near>
+          <far>8.0</far>
+        </clip>
+      </camera>
+    </sensor>
+  </gazebo>
+
+  <!-- Gazebo IMU Sensor (Prepared on imu_link) -->
+  <gazebo reference="imu_link">
+    <sensor name="imu_sensor" type="imu">
+      <update_rate>50</update_rate>
+      <topic>/imu/data</topic>
+      <gz_frame_id>imu_link</gz_frame_id>
+      <imu>
+        <angular_velocity>
+          <x><noise type="gaussian"><stddev>0.0002</stddev></noise></x>
+          <y><noise type="gaussian"><stddev>0.0002</stddev></noise></y>
+          <z><noise type="gaussian"><stddev>0.0002</stddev></noise></z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x><noise type="gaussian"><stddev>0.01</stddev></noise></x>
+          <y><noise type="gaussian"><stddev>0.01</stddev></noise></y>
+          <z><noise type="gaussian"><stddev>0.01</stddev></noise></z>
+        </linear_acceleration>
+      </imu>
+    </sensor>
+  </gazebo>
 
 </robot>

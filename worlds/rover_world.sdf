@@ -1,0 +1,264 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="rover_world">
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+
+    <!-- Light Source -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 15 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- Ground Plane -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100.0</mu>
+                <mu2>100.0</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.8 0.8 0.8 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ========================================================================= -->
+    <!-- 25m x 25m ENCLOSED ROOM OUTER WALLS                                       -->
+    <!-- ========================================================================= -->
+    <!-- North Wall (Y = +12.5) -->
+    <model name="wall_north">
+      <static>true</static>
+      <pose>0 12.5 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>25.2 0.2 2</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>25.2 0.2 2</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <!-- South Wall (Y = -12.5) -->
+    <model name="wall_south">
+      <static>true</static>
+      <pose>0 -12.5 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>25.2 0.2 2</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>25.2 0.2 2</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <!-- East Wall (X = +12.5) -->
+    <model name="wall_east">
+      <static>true</static>
+      <pose>12.5 0 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.2 25.2 2</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.2 25.2 2</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <!-- West Wall (X = -12.5) -->
+    <model name="wall_west">
+      <static>true</static>
+      <pose>-12.5 0 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.2 25.2 2</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.2 25.2 2</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <!-- ========================================================================= -->
+    <!-- INTERIOR PARTITION WALLS                                                  -->
+    <!-- ========================================================================= -->
+    <!-- Wall Partition NE -->
+    <model name="partition_ne">
+      <static>true</static>
+      <pose>5 5 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>8.0 0.3 2</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>8.0 0.3 2</size></box></geometry><material><ambient>0.3 0.6 0.3 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <!-- Wall Partition SW -->
+    <model name="partition_sw">
+      <static>true</static>
+      <pose>-5 -5 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>8.0 0.3 2</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>8.0 0.3 2</size></box></geometry><material><ambient>0.3 0.6 0.3 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <!-- Wall Partition NW -->
+    <model name="partition_nw">
+      <static>true</static>
+      <pose>-6 4 1 0 0 1.57</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>6.0 0.3 2</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>6.0 0.3 2</size></box></geometry><material><ambient>0.3 0.3 0.6 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <!-- ========================================================================= -->
+    <!-- STATIC PILLARS AND OBSTACLES                                              -->
+    <!-- ========================================================================= -->
+    <model name="pillar_1">
+      <static>true</static>
+      <pose>7 -7 1.0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><cylinder><radius>0.8</radius><length>2.0</length></cylinder></geometry></collision>
+        <visual name="visual"><geometry><cylinder><radius>0.8</radius><length>2.0</length></cylinder></geometry><material><ambient>0.7 0.2 0.2 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <model name="pillar_2">
+      <static>true</static>
+      <pose>-8 8 1.0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1.5 1.5 2.0</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>1.5 1.5 2.0</size></box></geometry><material><ambient>0.2 0.7 0.2 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <model name="pillar_3">
+      <static>true</static>
+      <pose>9 9 1.0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><cylinder><radius>0.6</radius><length>2.0</length></cylinder></geometry></collision>
+        <visual name="visual"><geometry><cylinder><radius>0.6</radius><length>2.0</length></cylinder></geometry><material><ambient>0.2 0.2 0.7 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <model name="pillar_4">
+      <static>true</static>
+      <pose>-9 -9 1.0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1.2 1.2 2.0</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>1.2 1.2 2.0</size></box></geometry><material><ambient>0.7 0.7 0.2 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <model name="pillar_5">
+      <static>true</static>
+      <pose>3 -8 0.75 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><cylinder><radius>0.5</radius><length>1.5</length></cylinder></geometry></collision>
+        <visual name="visual"><geometry><cylinder><radius>0.5</radius><length>1.5</length></cylinder></geometry><material><ambient>0.7 0.2 0.7 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <model name="pillar_6">
+      <static>true</static>
+      <pose>-3 8 0.75 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1.0 1.0 1.5</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>1.0 1.0 1.5</size></box></geometry><material><ambient>0.2 0.7 0.7 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <!-- ========================================================================= -->
+    <!-- DYNAMIC / MOVING OBSTACLES (ANIMATED ACTORS)                             -->
+    <!-- ========================================================================= -->
+    <!-- Moving Box 1 (Horizontal movement across Y = 2.0) -->
+    <actor name="moving_obstacle_1">
+      <link name="link">
+        <visual name="visual">
+          <geometry><box><size>0.8 0.8 1.5</size></box></geometry>
+          <material>
+            <ambient>0.9 0.1 0.1 1</ambient>
+            <diffuse>0.9 0.1 0.1 1</diffuse>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry><box><size>0.8 0.8 1.5</size></box></geometry>
+        </collision>
+      </link>
+      <script>
+        <loop>true</loop>
+        <delay_start>0.0</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="walk">
+          <waypoint>
+            <time>0.0</time>
+            <pose>-9 2 0.75 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>12.0</time>
+            <pose>9 2 0.75 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>24.0</time>
+            <pose>-9 2 0.75 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+
+    <!-- Moving Cylinder 2 (Vertical movement across X = -2.0) -->
+    <actor name="moving_obstacle_2">
+      <link name="link">
+        <visual name="visual">
+          <geometry><cylinder><radius>0.4</radius><length>1.5</length></cylinder></geometry>
+          <material>
+            <ambient>0.9 0.6 0.1 1</ambient>
+            <diffuse>0.9 0.6 0.1 1</diffuse>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry><cylinder><radius>0.4</radius><length>1.5</length></cylinder></geometry>
+        </collision>
+      </link>
+      <script>
+        <loop>true</loop>
+        <delay_start>0.0</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="walk">
+          <waypoint>
+            <time>0.0</time>
+            <pose>-2 -8 0.75 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>12.0</time>
+            <pose>-2 8 0.75 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>24.0</time>
+            <pose>-2 -8 0.75 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+
+  </world>
+</sdf>
