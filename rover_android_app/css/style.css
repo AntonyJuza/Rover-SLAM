@@ -1,0 +1,638 @@
+/* ==============================================================================
+   Rover Android App - Modern Aerospace Dark Theme
+   ============================================================================== */
+
+:root {
+  --bg-primary: #070a13;
+  --bg-card: rgba(17, 24, 39, 0.85);
+  --bg-elevated: rgba(30, 41, 59, 0.7);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-accent: rgba(0, 229, 255, 0.4);
+  
+  --accent-cyan: #00e5ff;
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+  --accent-emerald: #10b981;
+  --accent-danger: #ef4444;
+  --accent-amber: #f59e0b;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  
+  --shadow-glow-cyan: 0 0 16px rgba(0, 229, 255, 0.35);
+  --shadow-glow-danger: 0 0 16px rgba(239, 68, 68, 0.4);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+  
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: var(--text-primary);
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* ==============================================================================
+   Top Navigation Header
+   ============================================================================== */
+.app-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(56px + var(--safe-top));
+  padding: var(--safe-top) 16px 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(7, 10, 19, 0.95) 0%, rgba(7, 10, 19, 0.6) 80%, transparent 100%);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  pointer-events: none;
+}
+
+.header-left, .header-right, .telemetry-bar {
+  pointer-events: auto;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-danger);
+  box-shadow: 0 0 8px var(--accent-danger);
+  transition: all 0.3s ease;
+}
+
+.status-indicator.connected {
+  background: var(--accent-emerald);
+  box-shadow: 0 0 10px var(--accent-emerald);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--accent-cyan);
+}
+
+.conn-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+/* Telemetry HUD Chip */
+.telemetry-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  font-family: monospace;
+  font-size: 11px;
+  box-shadow: var(--shadow-card);
+}
+
+.tele-item .label {
+  color: var(--accent-cyan);
+  margin-right: 2px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+  background: var(--bg-elevated);
+}
+
+.estop-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: #fff;
+  border: none;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 8px 12px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  box-shadow: var(--shadow-glow-danger);
+  letter-spacing: 0.5px;
+  transition: transform 0.15s ease;
+}
+
+.estop-btn:active {
+  transform: scale(0.9);
+}
+
+/* ==============================================================================
+   Main Canvas Map Viewport
+   ============================================================================== */
+.map-container {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+}
+
+#mapCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.mode-hint {
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  color: var(--accent-cyan);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: var(--shadow-glow-cyan);
+  pointer-events: none;
+  z-index: 50;
+  animation: fadeIn 0.3s ease;
+}
+
+.mode-hint.hidden {
+  display: none;
+}
+
+/* Zoom Buttons */
+.zoom-controls {
+  position: absolute;
+  top: 75px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 50;
+}
+
+.zoom-btn {
+  width: 38px;
+  height: 38px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-card);
+}
+
+.zoom-btn:active {
+  background: var(--bg-elevated);
+}
+
+/* ==============================================================================
+   Virtual On-Screen Touch Joystick
+   ============================================================================== */
+.joystick-zone {
+  position: absolute;
+  bottom: 85px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 60;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.joystick-zone.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+}
+
+.joystick-base {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.05) 0%, rgba(17, 24, 39, 0.8) 70%);
+  border: 2px solid rgba(0, 229, 255, 0.3);
+  position: relative;
+  touch-action: none;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 229, 255, 0.15);
+}
+
+.joystick-stick {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00e5ff 0%, #0284c7 100%);
+  position: absolute;
+  top: calc(50% - 26px);
+  left: calc(50% - 26px);
+  box-shadow: var(--shadow-glow-cyan);
+  pointer-events: none;
+  transition: transform 0.05s ease-out;
+}
+
+.joystick-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+/* ==============================================================================
+   Bottom Toolbar
+   ============================================================================== */
+.bottom-toolbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(64px + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-subtle);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+}
+
+.tool-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.tool-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.tool-btn.active {
+  color: var(--accent-cyan);
+}
+
+.tool-btn.active svg {
+  transform: translateY(-2px);
+  stroke: var(--accent-cyan);
+  filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.6));
+}
+
+.tool-btn .badge {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  background: var(--accent-purple);
+  color: #fff;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+}
+
+/* ==============================================================================
+   Waypoint Drawer (Bottom Sheet)
+   ============================================================================== */
+.drawer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 75vh;
+  background: rgba(13, 18, 30, 0.95);
+  border-top: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  backdrop-filter: blur(20px);
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.7);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding-bottom: calc(16px + var(--safe-bottom));
+}
+
+.drawer.hidden {
+  transform: translateY(100%);
+  pointer-events: none;
+}
+
+.drawer-header {
+  padding: 16px 20px 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.drawer-title h3 {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.drawer-title .wp-count {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.drawer-actions {
+  display: flex;
+  gap: 10px;
+  padding: 10px 20px;
+}
+
+.action-btn {
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, #00e5ff 0%, #0284c7 100%);
+  color: #070a13;
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.action-btn.secondary {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+.action-btn.danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.action-btn.warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #070a13;
+}
+
+.action-btn.full-width {
+  width: 100%;
+}
+
+.waypoint-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 20px;
+  max-height: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wp-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  animation: fadeIn 0.2s ease;
+}
+
+.wp-badge-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-purple);
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.wp-details {
+  flex: 1;
+}
+
+.wp-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wp-coords {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.wp-del-btn {
+  background: none;
+  border: none;
+  color: var(--accent-danger);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.drawer-footer {
+  padding: 12px 20px 0 20px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px 10px;
+  color: var(--text-muted);
+}
+
+/* ==============================================================================
+   Modal Styling (Settings)
+   ============================================================================== */
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-card {
+  background: #0f172a;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.form-group input {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+}
+
+.form-group input:focus {
+  border-color: var(--accent-cyan);
+}
+
+.toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.toggle-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.modal-footer {
+  padding: 0 20px 20px 20px;
+}
+
+.icon-btn-sm {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 600px) {
+  .telemetry-bar {
+    display: none; /* Hide middle telemetry on very small screens to prevent clutter */
+  }
+}

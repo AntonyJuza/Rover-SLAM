@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Rover Mission Control</title>
+  <meta name="theme-color" content="#0b0f19">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Android Mission Control App for ROS 2 Rover with Nav2 Waypoint Navigation">
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/rover_icon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Local offline ROSLib -->
+  <script src="js/roslib.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- Top Navigation & Status Bar -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="status-indicator" id="connStatusDot" title="ROS Bridge Status"></div>
+        <div class="brand">
+          <span class="brand-title">ROVER CONTROL</span>
+          <span class="conn-label" id="connStatusText">Connecting...</span>
+        </div>
+      </div>
+      
+      <!-- Telemetry Chip -->
+      <div class="telemetry-bar" id="telemetryBar">
+        <span class="tele-item"><b class="label">X:</b> <span id="teleX">0.00</span>m</span>
+        <span class="tele-item"><b class="label">Y:</b> <span id="teleY">0.00</span>m</span>
+        <span class="tele-item"><b class="label">θ:</b> <span id="teleYaw">0°</span></span>
+      </div>
+
+      <div class="header-right">
+        <button id="btnRecenter" class="icon-btn" title="Center on Rover" aria-label="Center on Rover">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path>
+          </svg>
+        </button>
+        <button id="btnSettings" class="icon-btn" title="Connection Settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+        <button id="btnEStop" class="estop-btn" title="Emergency Stop">
+          🛑 STOP
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Map Viewport -->
+    <main class="map-container" id="mapContainer">
+      <canvas id="mapCanvas"></canvas>
+
+      <!-- Active Mode Hint Tooltip -->
+      <div id="modeHint" class="mode-hint hidden">
+        <span id="modeHintText">Drag arrow to set goal pose</span>
+      </div>
+
+      <!-- Quick Zoom Controls -->
+      <div class="zoom-controls">
+        <button id="btnZoomIn" class="zoom-btn">+</button>
+        <button id="btnZoomOut" class="zoom-btn">−</button>
+        <button id="btnResetView" class="zoom-btn">⟲</button>
+      </div>
+
+      <!-- Virtual Touch Joystick (Float on bottom-right) -->
+      <div id="joystickZone" class="joystick-zone">
+        <div id="joystickBase" class="joystick-base">
+          <div id="joystickStick" class="joystick-stick"></div>
+        </div>
+        <div class="joystick-label">TOUCH TO DRIVE</div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation / Tool Selector -->
+    <nav class="bottom-toolbar">
+      <button class="tool-btn active" data-tool="pan" id="toolPan">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M12 2v20M2 12h20"></path>
+        </svg>
+        <span>View</span>
+      </button>
+
+      <button class="tool-btn" data-tool="pose_est" id="toolPoseEst">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="22" y1="12" x2="18" y2="12"></line>
+          <line x1="6" y1="12" x2="2" y2="12"></line>
+          <line x1="12" y1="6" x2="12" y2="2"></line>
+          <line x1="12" y1="22" x2="12" y2="18"></line>
+        </svg>
+        <span>2D Pose</span>
+      </button>
+
+      <button class="tool-btn" data-tool="nav_goal" id="toolNavGoal">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"></path>
+          <circle cx="12" cy="9" r="2.5"></circle>
+        </svg>
+        <span>Nav Goal</span>
+      </button>
+
+      <button class="tool-btn" data-tool="waypoints" id="toolWaypoints">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+          <line x1="4" y1="22" x2="4" y2="15"></line>
+        </svg>
+        <span>Waypoints</span>
+        <span class="badge" id="wpBadge">0</span>
+      </button>
+
+      <button class="tool-btn" data-tool="joystick_toggle" id="toolJoystickToggle">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9"></circle>
+          <circle cx="12" cy="12" r="4" fill="currentColor"></circle>
+        </svg>
+        <span>Drive</span>
+      </button>
+    </nav>
+
+    <!-- Waypoint Management Drawer / Sheet -->
+    <div id="waypointDrawer" class="drawer hidden">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <h3>📍 Mission Waypoints</h3>
+          <span class="wp-count" id="wpCountLabel">0 locations</span>
+        </div>
+        <button id="btnCloseDrawer" class="icon-btn-sm">&times;</button>
+      </div>
+
+      <div class="drawer-actions">
+        <button id="btnAddCurrentPose" class="action-btn secondary">
+          ➕ Current Pose
+        </button>
+        <button id="btnClearWaypoints" class="action-btn danger">
+          🗑️ Clear
+        </button>
+      </div>
+
+      <div class="waypoint-list" id="waypointList">
+        <div class="empty-state">
+          <p>No waypoints added yet.</p>
+          <small>Tap the map in "Waypoints" mode or click "Current Pose" above.</small>
+        </div>
+      </div>
+
+      <div class="drawer-footer">
+        <div class="mission-controls">
+          <button id="btnStartMission" class="action-btn primary full-width">
+            ▶️ Start Waypoint Mission
+          </button>
+          <button id="btnCancelMission" class="action-btn warning full-width hidden">
+            ⏹️ Cancel Mission
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Connection Settings</h3>
+          <button id="btnCloseSettings" class="icon-btn-sm">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="wsIpInput">ROS Bridge IP / Hostname</label>
+            <input type="text" id="wsIpInput" placeholder="e.g. 192.168.1.54 or 192.168.1.106">
+          </div>
+          <div class="form-group">
+            <label for="wsPortInput">WebSocket Port</label>
+            <input type="number" id="wsPortInput" value="9090">
+          </div>
+          <div class="form-group">
+            <label for="maxSpeedSlider">Max Manual Speed: <span id="maxSpeedVal">0.12</span> m/s</label>
+            <input type="range" id="maxSpeedSlider" min="0.05" max="0.25" step="0.01" value="0.12">
+          </div>
+          <div class="toggle-group">
+            <label>
+              <input type="checkbox" id="chkShowScan" checked> Show LaserScan
+            </label>
+            <label>
+              <input type="checkbox" id="chkShowCostmap" checked> Show Inflation
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btnSaveConnect" class="action-btn primary full-width">Connect to Rover</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/canvas-map.js"></script>
+  <script src="js/joystick.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
