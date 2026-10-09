@@ -41,7 +41,7 @@ git checkout main
 ### Step 1: Launch Rover Hardware + SLAM Toolbox (on the Raspberry Pi)
 In a terminal on the Raspberry Pi:
 ```bash
-ros2 launch rover_bringup bringup.launch.py use_slam:=true left_trim:=1.0 right_trim:=1.0 use_imu:=false
+ros2 launch rover_bringup bringup.launch.py use_slam:=true left_trim:=1.0 right_trim:=1.0 use_imu:=true
 ```
 *This starts the LiDAR, Cytron motor drivers, differential odometry, and SLAM Toolbox in online async mapping mode (`map -> odom`).*
 
