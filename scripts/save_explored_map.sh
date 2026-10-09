@@ -9,7 +9,7 @@ MAP_DIR="/home/juza/rover_slam_ws/maps"
 mkdir -p "$MAP_DIR"
 echo "[INFO] Saving active SLAM map to ${MAP_DIR}/${MAP_NAME}..."
 
-ros2 run nav2_map_server map_saver_cli -f "${MAP_DIR}/${MAP_NAME}" --ros-args -p map_subscribe_transient_local:=true
+ros2 run nav2_map_server map_saver_cli -f "${MAP_DIR}/${MAP_NAME}" --ros-args -p map_subscribe_transient_local:=true -p save_map_timeout:=10.0
 
 if [ -f "${MAP_DIR}/${MAP_NAME}.yaml" ]; then
     echo "[SUCCESS] Map saved successfully!"
