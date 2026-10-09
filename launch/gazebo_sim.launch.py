@@ -2,9 +2,8 @@ import os
 import xacro
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, ExecuteProcess
-from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, PythonExpression
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
@@ -24,7 +23,6 @@ def generate_launch_description():
 
     # Launch Arguments
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
-    use_slam = LaunchConfiguration('use_slam', default='True')
 
     # 1. Gazebo Sim Launch
     gazebo_sim = IncludeLaunchDescription(
@@ -86,19 +84,15 @@ def generate_launch_description():
         package='rover_bringup',
         executable='tf_publisher',
         name='odom_tf_publisher',
-        parameters=[{
-            'use_sim_time': use_sim_time,
-            'use_imu': True,
-        }],
+        parameters=[{'use_sim_time': use_sim_time}],
         output='screen'
     )
 
-    # 5. SLAM Toolbox (Enabled only when use_slam is True)
+    # 5. SLAM Toolbox
     slam_toolbox = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
         ),
-        condition=IfCondition(PythonExpression(['"', use_slam, '" in ["True", "true", "1"]'])),
         launch_arguments={
             'slam_params_file': slam_params_file,
             'use_sim_time': 'true'
@@ -120,11 +114,6 @@ def generate_launch_description():
             'use_sim_time',
             default_value='true',
             description='Use simulation (Gazebo) clock if true'
-        ),
-        DeclareLaunchArgument(
-            'use_slam',
-            default_value='True',
-            description='Whether to launch SLAM Toolbox for online mapping'
         ),
         gazebo_sim,
         spawn_robot,

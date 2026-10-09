@@ -8,6 +8,9 @@
 
 
   <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rover_description</exec_depend>
+  <exec_depend>sdkeli_lidar</exec_depend>
+  <exec_depend>bno055_xiao_driver</exec_depend>
   <exec_depend>joint_state_publisher</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
   <exec_depend>robot_localization</exec_depend>
