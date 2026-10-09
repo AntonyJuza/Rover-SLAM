@@ -102,16 +102,16 @@ controller_server:
       min_vel_y: 0.0
       max_vel_x: 0.12
       max_vel_y: 0.0
-      max_vel_theta: 0.68
+      max_vel_theta: 0.58
       min_speed_xy: 0.0
       max_speed_xy: 0.12
       min_speed_theta: 0.0
       acc_lim_x: 0.25
       acc_lim_y: 0.0
-      acc_lim_theta: 0.80
+      acc_lim_theta: 0.70
       decel_lim_x: -0.25
       decel_lim_y: 0.0
-      decel_lim_theta: -0.80
+      decel_lim_theta: -0.70
       vx_samples: 12
       vy_samples: 1
       vtheta_samples: 16
@@ -160,9 +160,9 @@ behavior_server:
     behavior_plugins: [spin, backup, wait]
     spin:
       plugin: nav2_behaviors::Spin
-      max_rotational_vel: 0.68
+      max_rotational_vel: 0.58
       min_rotational_vel: 0.15
-      rotational_acc_lim: 0.8
+      rotational_acc_lim: 0.7
     backup:
       plugin: nav2_behaviors::BackUp
       backup_speed: 0.06
@@ -249,10 +249,10 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: OPEN_LOOP
-    max_velocity: [0.12, 0.0, 0.68]
-    min_velocity: [-0.06, 0.0, -0.68]
-    max_accel: [0.25, 0.0, 0.80]
-    max_decel: [-0.25, 0.0, -0.80]
+    max_velocity: [0.12, 0.0, 0.58]
+    min_velocity: [-0.06, 0.0, -0.58]
+    max_accel: [0.25, 0.0, 0.70]
+    max_decel: [-0.25, 0.0, -0.70]
     odom_topic: /odom
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
