@@ -100,11 +100,11 @@ controller_server:
       debug_trajectory_details: True
       min_vel_x: 0.0
       min_vel_y: 0.0
-      max_vel_x: 0.25
+      max_vel_x: 0.20
       max_vel_y: 0.0
-      max_vel_theta: 1.0
+      max_vel_theta: 0.94
       min_speed_xy: 0.15
-      max_speed_xy: 0.25
+      max_speed_xy: 0.20
       min_speed_theta: 0.0
       acc_lim_x: 0.50
       acc_lim_y: 0.0
@@ -160,7 +160,7 @@ behavior_server:
     behavior_plugins: [spin, backup, wait]
     spin:
       plugin: nav2_behaviors::Spin
-      max_rotational_vel: 1.0
+      max_rotational_vel: 0.94
       min_rotational_vel: 0.30
       rotational_acc_lim: 1.2
     backup:
@@ -249,8 +249,8 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: OPEN_LOOP
-    max_velocity: [0.25, 0.0, 1.0]
-    min_velocity: [-0.12, 0.0, -1.0]
+    max_velocity: [0.20, 0.0, 0.94]
+    min_velocity: [-0.10, 0.0, -0.94]
     max_accel: [0.50, 0.0, 1.2]
     max_decel: [-0.50, 0.0, -1.2]
     odom_topic: /odom
