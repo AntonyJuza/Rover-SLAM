@@ -1,0 +1,39 @@
+# ==============================================================================
+# Rover Waypoint Missions Configuration
+# ==============================================================================
+# Frame: Coordinates (x, y) in meters relative to the 'map' frame.
+# Yaw:   Orientation in radians (0 = East, 1.57 = North, 3.14 = West, -1.57 = South).
+# Task:  Action performed when rover reaches the waypoint:
+#        - 'wait': Wait for wait_seconds before continuing.
+#        - 'photo': Capture an image from camera topic (or mock) & wait.
+#        - 'none': Continue immediately to next waypoint.
+# ==============================================================================
+
+waypoints:
+  - name: "Home"
+    x: 0.0
+    y: 0.0
+    yaw: 0.0
+    wait_seconds: 2.0
+    action: "wait"
+
+  - name: "Waypoint_1"
+    x: 0.8
+    y: 0.0
+    yaw: 0.0
+    wait_seconds: 3.0
+    action: "wait"
+
+  - name: "Waypoint_2"
+    x: 1.2
+    y: 0.5
+    yaw: 1.57
+    wait_seconds: 4.0
+    action: "photo"
+
+  - name: "Waypoint_3"
+    x: 0.5
+    y: 0.5
+    yaw: 3.14
+    wait_seconds: 2.0
+    action: "wait"
